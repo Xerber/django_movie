@@ -1,2 +1,3 @@
 # django_movie
 Project "Video catalog" created by online course from youtube
+I started learning django and in this repository I will keep my project on the course from youtube. Project: Creation of a video catalog. Ratings, categories, genres, site search, filters by genre/year and actors. Description of films and reviews to them. Administration panel management and work with templates/template tags
