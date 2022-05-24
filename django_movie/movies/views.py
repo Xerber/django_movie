@@ -1,5 +1,5 @@
 from django.views.generic import ListView, DetailView, View
-from .models import Movie
+from .models import Category, Movie
 from django.shortcuts import redirect
 from .forms import ReviewForm
 
@@ -14,6 +14,7 @@ class MovieDetailView(DetailView):
   '''Полное описание фильма'''
   model = Movie
   slug_field = "url"
+
 
 class AddReview(View):
   '''Отзывы'''
