@@ -28,6 +28,9 @@ class Actor(models.Model):
   def __str__(self):
       return self.name
   
+  def get_absolute_url(self):
+      return reverse("actor_detail", kwargs={"slug": self.name})
+  
 
   class Meta:
     verbose_name = "Актеры и режиссеры"
@@ -58,8 +61,8 @@ class Movie(models.Model):
   poster = models.ImageField("Постер", upload_to="movies/")
   year = models.PositiveSmallIntegerField("Дата выхода", default=1999)
   country = models.CharField("Страна", max_length=30)
-  directors = models.ManyToManyField(Actor, verbose_name="Режиссер", related_name="Film_director")
-  actors = models.ManyToManyField(Actor, verbose_name="Актеры", related_name="Film_actor")
+  directors = models.ManyToManyField(Actor, verbose_name="Режиссер", related_name="film_director")
+  actors = models.ManyToManyField(Actor, verbose_name="Актеры", related_name="film_actor")
   genres = models.ManyToManyField(Genre, verbose_name="Жанры")
   world_premiere = models.DateField("Премьера в мире", default=date.today)
   budget = models.PositiveIntegerField("Бюджет", default=0, help_text="Указывать сумму в долларах")
