@@ -88,6 +88,36 @@ header {
     display: none;
 }
 
+/* Checkbox stars */
+.rating {
+    overflow: hidden;
+    vertical-align: bottom;
+    display: inline-block;
+    width: 155px;
+    height: 30px;
+}
+
+.rating > input {
+    opacity: 0;
+    margin-right: -100%;
+}
+
+.rating > label {
+    position: relative;
+    display: block;
+    float: right;
+    background: url('../images/star-off-big.png');
+    background-size: 30px 30px;
+}
+
+.rating > label:before {
+    display: block;
+    opacity: 0;
+    content: '';
+    width: 30px;
+    height: 30px;
+    background: url('../images/star-on-big.png');
+}
 /* Giving a background-color to the nav container. */
 
 nav {
@@ -419,6 +449,7 @@ li > a:only-child:after {
     /* Firefox 19+ */
     color: #ccc;
 }
+
 
 .banner-form :-ms-input-placeholder {
     /* IE 10+ */

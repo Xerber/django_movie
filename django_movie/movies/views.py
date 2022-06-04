@@ -1,8 +1,11 @@
-from django.views.generic import ListView, DetailView, View
-from .models import Actor, Category, Movie, Genre
-from django.shortcuts import redirect
 from django.db.models import Q
-from .forms import ReviewForm
+from django.http import JsonResponse
+from http.client import HTTPResponse
+from django.shortcuts import redirect
+from django.views.generic import ListView, DetailView, View
+
+from .models import Actor, Category, Movie, Genre, Rating
+from .forms import ReviewForm, RatingForm
 
 
 class GenreYear:
@@ -25,6 +28,11 @@ class MovieDetailView(GenreYear, DetailView):
   '''Полное описание фильма'''
   model = Movie
   slug_field = "url"
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["star_form"] = RatingForm()
+    return context
 
 
 class AddReview(View):
@@ -55,3 +63,38 @@ class FilterMoviesView(GenreYear, ListView):
         Q(genres__in=self.request.GET.getlist("genre"))
         ).distinct()
       return queryset
+
+class JsonFilterMoivesView(ListView):
+  '''Фильтр фильмов в json'''
+  def get_queryset(self):
+      queryset = Movie.objects.filter(
+        Q(year__in=self.request.GET.getlist("year")) | 
+        Q(genres__in=self.request.GET.getlist("genre"))
+        ).distinct().values("title","tagline","url","poster")
+      return queryset
+  
+  def get(self, request, *args, **kwargs):
+    queryset = list(self.get_queryset())
+    return JsonResponse({"movies":queryset}, safe=False)
+
+class AddStarRating(View):
+  '''Добавление рейтинга к фильму'''
+  def get_client_ip(self, request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+      ip = x_forwarded_for.split(',')[0]
+    else:
+      ip = request.META.get('REMOTE_ADDR')
+    return ip
+  
+  def post(self,request):
+    form = RatingForm(request.POST)
+    if form.is_valid():
+      Rating.objects.update_or_create(
+        ip=self.get_client_ip(request),
+        movie_id=int(request.POST.get("movie")),
+        defaults={'star_id': int(request.POST.get("star"))}
+      )
+      return HTTPResponse(status=201)
+    else:
+      return HTTPResponse(status=400)
